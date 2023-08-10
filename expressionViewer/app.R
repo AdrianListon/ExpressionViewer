@@ -190,6 +190,11 @@
     TCR_plots_list <- list.files(path = "www/TCR_plots/", pattern = ".png")
     #print(TCR_plots_list)
     
+    ## aging_tsne_plots_list ----
+    aging_tsne_plots_list <- list.files(path = "www/Aging_tsne_plots/", pattern = ".png")
+    aging_tsne_tissues <- gsub(pattern = " .*", replacement = "", x = aging_tsne_plots_list, ignore.case = T)
+    aging_tsne_tissues <- unique(gsub(pattern = "tsne_plot_", replacement = "", x = aging_tsne_tissues, ignore.case = T))
+    
     #importing Pathview plots
     {
       Pathview_plots_list <- list.files(path = "www/Pathview_plots", 
@@ -1082,7 +1087,7 @@
       #            )
       # },
       
-      #TCR panel
+      #TCR panel ----
       {
         tabPanel(title = "TCR", value = "TCR", 
                  
@@ -1137,13 +1142,62 @@
                    
                  )
                  )
+      },
+      # Aging t-SNE panel ----
+      # It might be worth putting the pngs together into one plot
+      {
+        tabPanel(
+          title = "Aging t-SNE", 
+          value = "AgingTSNE", 
+          h3("t-SNE plots across 6 time-points"),
+          p(paste0("Further description?")),
+          hr(),
+          fluidRow(
+            column(
+              width = 3,
+              selectizeInput(
+                inputId = "agingTSNEtissue", 
+                label = "Select Tissue", 
+                choices = aging_tsne_tissues,
+                #selectize = T, 
+                multiple = FALSE, 
+                options = list(
+                 placeholder = "Click to select")
+              ),
+              downloadButton(
+                outputId = "DownloadAgingTSNEtissue", 
+                label = "Selected Tissue"
+              ),
+              downloadButton(
+                outputId = "DownloadAgingTSNEAll", 
+                label = "All Tissues"
+              ),
+              actionButton("browser", "browser")
+            ),
+            column(
+              width = 4,
+              imageOutput(
+                outputId = "agingTSNEImage1", 
+                width = 4344*0.15, 
+                height = 4601*0.15
+              ) %>% 
+              withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
+            ),
+            column(
+              width = 4,
+              imageOutput(
+                outputId = "agingTSNEImage2", 
+                width = 4344*0.15, 
+                height = 4601*0.15
+              ) %>% 
+                withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
+            )
+          )
+        )
       }
-      
-      
-      ),
-    )
+    ),
+  )
   ## ui fluid page ends at bracket immediately above
-  
 }
 
 
@@ -2525,7 +2579,7 @@
     })
     
     
-    #display TCR chord diagrams
+    # display TCR chord diagrams ----
     observeEvent(input$TCRChordSelect, {
       output$TCRChordImage <- renderImage(expr = {
         
@@ -2547,6 +2601,38 @@
              )
       }, deleteFile = F)
     })
+    
+    tsne_aging_img <- function(filename){
+      img <- readPNG(source = filename, native = T, info = T)
+      list(
+        src = filename, 
+        contentType = 'image/png', 
+        width = dim(img)[2]*0.5, 
+        height = dim(img)[1]*0.5
+      )
+    }
+    
+    observeEvent(input$browser, browser())
+    
+    # aging tSNE plots ----
+    observeEvent(input$agingTSNEtissue, {
+      tissue_files <- paste0("www/Aging_tsne_plots/", 
+                         aging_tsne_plots_list[grep(pattern = input$agingTSNEtissue, 
+                                             x = aging_tsne_plots_list, 
+                                             ignore.case = T)])
+      tissue_files <- tissue_files[c(6,2,3,4,5,1)]
+      # ordering them manually
+      
+      output$agingTSNEImage1 <- renderImage(
+        expr = tsne_aging_img(tissue_files[2]), deleteFile = F
+      )
+    
+      output$agingTSNEImage2 <- renderImage(
+        expr = tsne_aging_img(tissue_files[2]), deleteFile = F
+      )
+      
+    })
+    
     
     #display Pathview KEGG Pathways
     observeEvent(input$PathviewPlotSelect, {
