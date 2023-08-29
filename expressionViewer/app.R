@@ -195,6 +195,11 @@
     aging_tsne_tissues <- gsub(pattern = " .*", replacement = "", x = aging_tsne_plots_list, ignore.case = T)
     aging_tsne_tissues <- unique(gsub(pattern = "tsne_plot_", replacement = "", x = aging_tsne_tissues, ignore.case = T))
     
+    ## microbiome_tsne_plots_list ----
+    microbiome_tsne_plots_list <- list.files(path = "www/Microbiome_tsne_plots/", pattern = ".png")
+    microbiome_tsne_tissues <- gsub(pattern = " .*", replacement = "", x = microbiome_tsne_plots_list, ignore.case = T)
+    microbiome_tsne_tissues <- unique(gsub(pattern = "tsne_plot_", replacement = "", x = microbiome_tsne_tissues, ignore.case = T))
+    
     #importing Pathview plots
     {
       Pathview_plots_list <- list.files(path = "www/Pathview_plots/", 
@@ -1225,7 +1230,6 @@
       },
       
       # Aging t-SNE panel ----
-      # It might be worth putting the pngs together into one plot
       {
         tabPanel(
           title = "Aging t-SNE", 
@@ -1247,7 +1251,7 @@
               ),
             ),
             column(
-              width = 1, 
+              width = 2, 
               offset = 1,
               br(),
               downloadButton(
@@ -1256,13 +1260,12 @@
               )
             ),
             column(
-              width = 2,
+              width = 1,
               br(),
               downloadButton(
                 outputId = "DownloadAgingTSNEAll", 
                 label = "All Tissues"
-              ),
-              actionButton("browser", "browser")
+              )
             )
           ),
           hr(),
@@ -1302,8 +1305,69 @@
             )
           ) 
         )
+      },
+      
+      # Microbiome t-SNE panel ----
+      {
+        tabPanel(
+          title = "Microbiome t-SNE", 
+          value = "MicrobiomeTSNE", 
+          h3("t-SNE plots across 3 conditions"),
+          p(paste0("Further description?")),
+          hr(),
+          fluidRow(
+            column(
+              width = 2,
+              selectizeInput(
+                inputId = "microbiomeTSNEtissue", 
+                label = "Select Tissue", 
+                choices = microbiome_tsne_tissues,
+                #selectize = T, 
+                multiple = FALSE, 
+                options = list(
+                  placeholder = "Click to select")
+              ),
+            ),
+            column(
+              width = 2, 
+              offset = 1,
+              br(),
+              downloadButton(
+                outputId = "DownloadMicrobiomeTSNEtissue", 
+                label = "Selected Tissue"
+              )
+            ),
+            column(
+              width = 1,
+              br(),
+              downloadButton(
+                outputId = "DownloadMicrobiomeTSNEAll", 
+                label = "All Tissues"
+              )#,
+              #actionButton("browser", "browser")
+            )
+          ),
+          hr(),
+          fluidRow(
+            column(
+              width = 4,
+              textOutput(outputId = "microbiomeTSNETitle1"),
+              imageOutput(outputId = "microbiomeTSNEImage1", width = "100%", height = "100%")
+            ),
+            column(
+              width = 4,
+              textOutput(outputId = "microbiomeTSNETitle2"),
+              imageOutput(outputId = "microbiomeTSNEImage2", width = "100%", height = "100%")
+            ),
+            column(
+              width = 4,
+              textOutput(outputId = "microbiomeTSNETitle3"),
+              imageOutput(outputId = "microbiomeTSNEImage3", width = "100%", height = "100%") 
+            )
+          )
+        )
       }
-    ),
+    )
   )
   ## ui fluid page ends at bracket immediately above
   
@@ -2741,10 +2805,15 @@
     
     # aging tSNE plots ----
     observeEvent(input$agingTSNEtissue, {
-      tissue_files <- paste0("www/Aging_tsne_plots/", 
-                             aging_tsne_plots_list[grep(pattern = input$agingTSNEtissue, 
-                                                        x = aging_tsne_plots_list, 
-                                                        ignore.case = T)])
+      tissue_files <- paste0(
+        "www/Aging_tsne_plots/", 
+        aging_tsne_plots_list[
+          grep(
+            pattern = input$agingTSNEtissue, 
+            x = aging_tsne_plots_list, 
+            ignore.case = T)
+          ]
+      )
       # ordering them manually - they're read in in this order due to the numbers:
       # [1] "xx100-week__cluster.png"
       # [2] "xx12-week__cluster.png" 
@@ -2779,6 +2848,44 @@
       output$agingTSNETitle5 <- renderText(paste("t-SNE", input$agingTSNEtissue, "52 weeks"))
       output$agingTSNETitle6 <- renderText(paste("t-SNE", input$agingTSNEtissue, "100 weeks"))
     })
+    
+    
+    tsne_microbiome_img <- function(filename){
+      img <- readPNG(source = filename, native = T, info = T)
+      list(
+        src = filename, 
+        contentType = 'image/png', 
+        width = dim(img)[2]*0.4, 
+        height = dim(img)[1]*0.4
+      )
+    }
+    
+    
+    # microbiome tSNE plots ----
+    observeEvent(input$microbiomeTSNEtissue, {
+      tissue_files <- paste0(
+        "www/Microbiome_tsne_plots/", 
+        microbiome_tsne_plots_list[grep(pattern = input$microbiomeTSNEtissue, 
+                                        x = microbiome_tsne_plots_list, 
+                                        ignore.case = TRUE)])
+
+      output$microbiomeTSNEImage1 <- renderImage(
+        expr = tsne_microbiome_img(tissue_files[1]), deleteFile = F
+      )
+      output$microbiomeTSNEImage2 <- renderImage(
+        expr = tsne_microbiome_img(tissue_files[2]), deleteFile = F
+      )
+      output$microbiomeTSNEImage3 <- renderImage(
+        expr = tsne_microbiome_img(tissue_files[3]), deleteFile = F
+      )
+
+      output$microbiomeTSNETitle1 <- renderText(paste("t-SNE", input$microbiomeTSNEtissue, "Cohoused"))
+      output$microbiomeTSNETitle2 <- renderText(paste("t-SNE", input$microbiomeTSNEtissue, "Gnotobiotic"))
+      output$microbiomeTSNETitle3 <- renderText(paste("t-SNE", input$microbiomeTSNEtissue, "SPF"))
+
+    })
+    
+    
     
     #display Pathview KEGG Pathways
     observeEvent(input$PathviewPlotSelect, {
@@ -2910,6 +3017,42 @@
       contentType = "application/zip"
     )
     
+    # download microbiome tSNE plots ----
+    output$DownloadMicrobiomeTSNEtissue <- downloadHandler(
+      
+      filename = function() {
+        paste0(input$microbiomeTSNEtissue, "_microbiome_tSNE.zip")
+      },
+      content = function(file){
+        
+        zip(
+          zipfile = file,
+          files = 
+            paste0(
+              "www/Microbiome_tsne_plots/", 
+              microbiome_tsne_plots_list[
+                grep(pattern = input$microbiomeTSNEtissue, x = microbiome_tsne_plots_list, ignore.case = T)
+              ]
+            ),
+          flags = "-j"
+        )
+      }, contentType = "application/zip"
+    )
+    
+    
+    output$DownloadMicrobiomeTSNEAll <- downloadHandler(
+      filename = function() {
+        paste0("all_microbiome_tSNE.zip")
+      },
+      content = function(file){
+        
+        zip(zipfile = file, 
+            files = paste0("www/Microbiome_tsne_plots/", microbiome_tsne_plots_list), 
+            flags = "-j")
+        
+      },
+      contentType = "application/zip"
+    )
     
     
     # download TCR plots ----
