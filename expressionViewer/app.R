@@ -2857,25 +2857,7 @@
         
       }, 
       contentType = "application/zip")
-    # output$DownloadPathviewSelected <- downloadHandler(
-    #   filename = paste0(input$PathviewPlotSelect, ".png"),
-    #   content = function(file){
-    # 
-    #     pathway_id <- gsub(pattern = " - .*",
-    #                        replacement = "",
-    #                        x = input$PathviewPlotSelect,
-    #                        ignore.case = T)
-    # 
-    #     file.copy(paste0("www/Pathview_plots/",
-    #                      Pathview_plots_list[grep(pattern = pathway_id,
-    #                                               x = Pathview_plots_list,
-    #                                               ignore.case = T)]), 
-    #               file, 
-    #               copy.mode = F, 
-    #               copy.date = F
-    #               )
-    #     }, 
-    #   contentType = "image/png")
+
     output$DownloadPathviewAll <- downloadHandler(
       filename = function() {
         paste0("all_pathways.zip")
@@ -2891,7 +2873,46 @@
       },
       contentType = "application/zip")
     
-    #download TCR plots
+    # download aging tSNE plots ----
+    output$DownloadAgingTSNEtissue <- downloadHandler(
+      
+      filename = function() {
+        paste0(input$agingTSNEtissue, "_aging_tSNE.zip")
+      },
+      content = function(file){
+
+        zip(
+          zipfile = file,
+          files = 
+            paste0(
+              "www/Aging_tsne_plots/", 
+              aging_tsne_plots_list[
+                grep(pattern = input$agingTSNEtissue, x = aging_tsne_plots_list, ignore.case = T)
+              ]
+            ),
+          flags = "-j"
+        )
+      }, contentType = "application/zip"
+    )
+    
+    
+    output$DownloadAgingTSNEAll <- downloadHandler(
+      filename = function() {
+        paste0("all_aging_tSNE.zip")
+      },
+      content = function(file){
+        
+        zip(zipfile = file, 
+            files = paste0("www/Aging_tsne_plots/", aging_tsne_plots_list), 
+            flags = "-j")
+        
+      },
+      contentType = "application/zip"
+    )
+    
+    
+    
+    # download TCR plots ----
     output$DownloadTCRSelected <- downloadHandler(
       filename = function() {
         paste0(input$TCRChordSelect, "_chord_diagram.png")
@@ -2909,6 +2930,7 @@
         )
       },
       contentType = "image/png")
+    
     output$DownloadTCRAll <- downloadHandler(
       filename = function() {
         paste0("all_chord_diagrams.zip")
