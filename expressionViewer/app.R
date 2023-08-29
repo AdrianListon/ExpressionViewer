@@ -1245,41 +1245,62 @@
                 options = list(
                   placeholder = "Click to select")
               ),
+            ),
+            column(
+              width = 1, 
+              offset = 1,
+              br(),
               downloadButton(
                 outputId = "DownloadAgingTSNEtissue", 
                 label = "Selected Tissue"
-              ),
+              )
+            ),
+            column(
+              width = 2,
+              br(),
               downloadButton(
                 outputId = "DownloadAgingTSNEAll", 
                 label = "All Tissues"
               ),
               actionButton("browser", "browser")
+            )
+          ),
+          hr(),
+          fluidRow(
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle1"),
+              imageOutput(outputId = "agingTSNEImage1", width = "100%", height = "100%")
             ),
-            flowLayout(
-              wellPanel(
-                verticalLayout(
-                  textOutput(outputId = "agingTSNETitle1"),
-                  imageOutput(
-                    outputId = "agingTSNEImage1"#, 
-                    #width = 4344*0.15, 
-                    #height = 4601*0.15
-                  ) #%>% 
-                  #withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
-                )
-              ),
-              wellPanel(
-                verticalLayout(
-                  textOutput(outputId = "agingTSNETitle2"),
-                  imageOutput(
-                    outputId = "agingTSNEImage2", 
-                    width = 4344*0.15, 
-                    height = 4601*0.15
-                  ) #%>% 
-                  #withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
-                )
-              )
-            )  
-          )
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle2"),
+              imageOutput(outputId = "agingTSNEImage2", width = "100%", height = "100%")
+            ),
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle3"),
+              imageOutput(outputId = "agingTSNEImage3", width = "100%", height = "100%") 
+            )
+          ),
+          br(),
+          fluidRow( 
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle4"),
+              imageOutput(outputId = "agingTSNEImage4", width = "100%", height = "100%")
+            ),
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle5"),
+              imageOutput(outputId = "agingTSNEImage5", width = "100%", height = "100%")
+            ),
+            column(
+              width = 4,
+              textOutput(outputId = "agingTSNETitle6"),
+              imageOutput(outputId = "agingTSNEImage6", width = "100%", height = "100%")
+            )
+          ) 
         )
       }
     ),
@@ -2711,8 +2732,8 @@
       list(
         src = filename, 
         contentType = 'image/png', 
-        width = dim(img)[2]*0.15, 
-        height = dim(img)[1]*0.15
+        width = dim(img)[2]*0.4, 
+        height = dim(img)[1]*0.4
       )
     }
     
@@ -2724,21 +2745,39 @@
                              aging_tsne_plots_list[grep(pattern = input$agingTSNEtissue, 
                                                         x = aging_tsne_plots_list, 
                                                         ignore.case = T)])
+      # ordering them manually - they're read in in this order due to the numbers:
+      # [1] "xx100-week__cluster.png"
+      # [2] "xx12-week__cluster.png" 
+      # [3] "xx20-week__cluster.png" 
+      # [4] "xx30-week__cluster.png" 
+      # [5] "xx52-week__cluster.png" 
+      # [6] "xx8-week__cluster.png" 
       tissue_files <- tissue_files[c(6,2,3,4,5,1)]
-      # ordering them manually
       
       output$agingTSNEImage1 <- renderImage(
-        expr = tsne_aging_img(tissue_files[2]), deleteFile = F
+        expr = tsne_aging_img(tissue_files[1]), deleteFile = F
       )
-      
       output$agingTSNEImage2 <- renderImage(
         expr = tsne_aging_img(tissue_files[2]), deleteFile = F
       )
-      
+      output$agingTSNEImage3 <- renderImage(
+        expr = tsne_aging_img(tissue_files[3]), deleteFile = F
+      )
+      output$agingTSNEImage4 <- renderImage(
+        expr = tsne_aging_img(tissue_files[4]), deleteFile = F
+      )
+      output$agingTSNEImage5 <- renderImage(
+        expr = tsne_aging_img(tissue_files[5]), deleteFile = F
+      )
+      output$agingTSNEImage6 <- renderImage(
+        expr = tsne_aging_img(tissue_files[6]), deleteFile = F
+      )
       output$agingTSNETitle1 <- renderText(paste("t-SNE", input$agingTSNEtissue, "8 weeks"))
       output$agingTSNETitle2 <- renderText(paste("t-SNE", input$agingTSNEtissue, "12 weeks"))
-      
-      
+      output$agingTSNETitle3 <- renderText(paste("t-SNE", input$agingTSNEtissue, "20 weeks"))
+      output$agingTSNETitle4 <- renderText(paste("t-SNE", input$agingTSNEtissue, "30 weeks"))
+      output$agingTSNETitle5 <- renderText(paste("t-SNE", input$agingTSNEtissue, "52 weeks"))
+      output$agingTSNETitle6 <- renderText(paste("t-SNE", input$agingTSNEtissue, "100 weeks"))
     })
     
     #display Pathview KEGG Pathways
