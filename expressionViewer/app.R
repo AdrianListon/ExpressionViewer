@@ -1,5 +1,7 @@
 
 
+# Developed by Samar H.K. Tareen
+
 
 #importing libraries & functions, reading in data, and setting up global options
 {
@@ -16,6 +18,7 @@
     library(DT)
     library(ggplot2)
     library(ggrepel)
+    library(patchwork)
     library(viridis)
     library(plotly)
     library(stringr)
@@ -31,9 +34,6 @@
     library(shinyalert)
     
   }
-  
-  # #functions and scripts
-  # source("customFunctions.R")
   
   #data
   {
@@ -187,7 +187,7 @@
     filtered_genes_lists <- readRDS(file = "data/Filtered_Gene_Lists.rds")
     
     #importing TCR plots
-    TCR_plots_list <- list.files(path = "www/TCR_plots/", pattern = ".png")
+    TCR_plots_list <- list.files(path = "www/TCR_plots/", pattern = "\\.png$")
     #print(TCR_plots_list)
     
     ## aging_tsne_plots_list ----
@@ -197,8 +197,8 @@
     
     #importing Pathview plots
     {
-      Pathview_plots_list <- list.files(path = "www/Pathview_plots", 
-                                        pattern = ".multi\\.png")
+      Pathview_plots_list <- list.files(path = "www/Pathview_plots/", 
+                                        pattern = "\\.multi\\.png$")
       #print(Pathview_plots_list)
       
       #mapping Pathview plot files to pathway names
@@ -231,7 +231,7 @@
     # using shinyjs to enable or disable certain sections/elements of the app
     shinyjs::useShinyjs(),
     # using shinyalert to enable popup messages
-    shinyalert::useShinyalert(),
+    # shinyalert::useShinyalert(),
     
     # Step-by-step tutorial
     introjsUI(),
@@ -250,8 +250,7 @@
     #dashboardBody(),
     
     # App title ----
-    #titlePanel("Expression Viewer"),
-    titlePanel("The Tissue Tregs Project"),
+    titlePanel("The Tissue Treg Project"),
     
     tabsetPanel(
       
@@ -259,12 +258,25 @@
       {
         tabPanel(title = "The Study", value = "TheStudy", 
                  
-                 h3("General description/information of the study/data"),
+                 h3("Transcriptional analysis of tissue-resident regulatory T cells"),
                  
-                 p(paste0("Some description of the study, as well as where to ", 
-                          "find additional sources such as papers and data.")), 
-                 p(paste0("Ask Adrian and Oliver as they would be able to ", 
-                          "provide a much better description")),
+                 "A transcriptional analysis of tissue-resident ", 
+                 "regulatory T cells (Tregs) as part of the Tissue ", 
+                 "Treg Project from the ", 
+                 a("Liston-Dooley lab.", href='https://www.listonlab.uk/', 
+                   target = "_blank"), 
+                 "The project is based on Tregs and conventional ", 
+                 "T cells (Tconv) isolated from blood, spleen, ", 
+                 "lymph nodes, kidney, liver, lung, pancreas, and ", 
+                 "gut (Peyer’s patches, LPLs, IELs). The ", 
+                 "expression viewer, allowing interactive custom ", 
+                 "analysis and data download, was developed by ", 
+                 "Samar Tareen, is ", 
+                 a("open source,", href = 'https://github.com/AdrianListon/ExpressionViewer', 
+                   target = "_blank"), 
+                 "and is hosted by the Babraham Institute ", 
+                 a("Bioinformatics Group.", href = 'https://www.bioinformatics.babraham.ac.uk/', 
+                   target = "_blank"),
                  
                  hr(),
                  
@@ -316,11 +328,8 @@
                  br(),
                  
                  fluidRow(
-                   h6(paste0("Copyright 2020, Liston Lab, Babraham Institute. ",
-                             "Babraham internal/intranet release only. ",
-                             "Copyright licence will most likely change by the ", 
-                             "first public release as per the requirements of ", 
-                             "the publication journal and BI."))
+                   h6(paste0("Copyright 2023, Liston-Dooley Lab, ", 
+                             "Babraham Institute and University of Cambridge."))
                  )
         )
       },
@@ -329,13 +338,36 @@
       {
         tabPanel(title = "Global Analysis", value = "GlobalAnalysis",
                  
-                 h3("Exploratory analysis of the expression data"),
+                 h3("Global analysis of tissue Treg transcriptome across different tissue sources"),
                  
-                 p(paste0("PCA, t-SNE and UMAP analysis and plots of the ", 
-                          "RNA-seq expression data from the study.")),
+                 p(paste0("For the bulk RNA-seq analysis, Tregs and Tconv were ", 
+                          "isolated from blood, and perfused spleen, lymph ", 
+                          "nodes, kidney, liver, lung, pancreas, and gut ", 
+                          "(Peyer’s patches, LPLs, IELs) samples. Samples were ", 
+                          "prepared from Foxp3Thy1.1 reporter mice, allowing ", 
+                          "purification based on Foxp3 expression. mRNA was ", 
+                          "sequencing using the QuantSeq 3’mRNA-Seq Library ", 
+                          "Prep Kit for Illumina and the QuantSeg data analysis ", 
+                          "workflow. The relationship between samples at the ", 
+                          "global level is visualised through PCA (using all ", 
+                          "samples or tissue means), tSNE and UMAP projections.")),
                  
-                 p(paste0("Plots can be downloaded by right clicking the ",
-                           "plot and clicking on 'Save image as...'")),
+                 # p(paste0("For the single cell RNA-seq analysis, Tregs were ", 
+                 #          "flow sorted from Foxp3Thy1.1 reporter mice, ", 
+                 #          "pre-injected with anti-CD45 via intravenous ", 
+                 #          "delivery. Cells were purified from blood, kidney, ", 
+                 #          "liver, pancreas and LPLs from the gut. Purified ", 
+                 #          "cells were CD4+Foxp3Thy1.1+ as well as negative for ", 
+                 #          "intravenous CD45 labelling and for the exclusion ", 
+                 #          "markers CD19, CD11b, CD8 and F4/80. Cells were ", 
+                 #          "labelled with Hastag TotalSeq and loaded onto the ", 
+                 #          "10x Chromium Controller with sequencing performed ", 
+                 #          "on Illumina HiSeq. Single cell data is visually ", 
+                 #          "presented as tSNE and UMAP projections, with each ", 
+                 #          "tissue origin labelled a different colour.")),
+                 
+                 p(paste0("Plots may be downloaded by right clicking the ",
+                          "plot and selecting 'Save image as...'")),
                  
                  #br(),
                  hr(),
@@ -382,11 +414,11 @@
                  
                  hr(),
                  
-                 h4("Single cell RNA-seq data"),
+                 # h4("Single cell RNA-seq data"),
+                 # 
+                 # p("Will be available soon")
                  
-                 p("Will be available soon")
-                 
-                 )
+        )
       },
       
       #Bulk RNA-seq Expression panel
@@ -395,26 +427,43 @@
                  value = "BulkDiffExprs",
                  
                  fluidRow(
-                 
-                 column(width = 7, 
-                  h3("Generate contrasts"),
-                  p(paste0("The differential expression analysis is performed ", 
-                          "using DESeq2. For a quick walkthrough on doing the ", 
-                          "the analysis, please click the yellow button with ", 
-                          "the question mark."))
-                 ),
-                 
-                 column(width = 5, 
-                        br(),
-                        br(),
-                 # actionButton(inputId = "TutorialButton", 
-                 #              label = "Start tutorial"),
-                 actionBttn(inputId = "TutorialButton", 
-                            label = "Start tutorial", 
-                            style = "material-circle", 
-                            color = "warning", 
-                            icon = icon("question")),
-                 )
+                   
+                   column(width = 7, 
+                          h3("Generate contrasts"),
+                          
+                          "An interactive differential analysis tool based ", 
+                          "on the bulk RNAseq dataset. Pick any population ", 
+                          "or group of populations to run a differential ", 
+                          "expression analysis by comparison to any other ", 
+                          "population or group of populations. Both Tregs ", 
+                          "and Tconv are available, as purified from the ", 
+                          "blood, spleen, lymph nodes, kidney, liver, lung, ", 
+                          "pancreas, Peyer’s Patches, and intraepithelial ", 
+                          "cells (IEL) and lamina propria lymphocytes (LPL) ", 
+                          "from the intestines. The differential expression ", 
+                          "analysis is performed using DESeq2, using a custom ", 
+                          "script available on ", 
+                          a("GitHub.", href= 'https://github.com/AdrianListon/TissueTregs', 
+                            target = "_blank"),
+                          p(),
+                          "For a quick walkthrough on doing the analysis, ", 
+                          "please click the yellow button with the question ", 
+                          "mark. Download options for visualization and ", 
+                          "data tables become available after running a contrast.",
+                          
+                   ),
+                   
+                   column(width = 5, 
+                          br(),
+                          br(),
+                          # actionButton(inputId = "TutorialButton", 
+                          #              label = "Start tutorial"),
+                          actionBttn(inputId = "TutorialButton", 
+                                     label = "Start tutorial", 
+                                     style = "material-circle", 
+                                     color = "warning", 
+                                     icon = icon("question")),
+                   )
                  ),
                  
                  hr(),
@@ -474,7 +523,7 @@
                                                               "duplicate ", 
                                                               "tissues that are ", 
                                                               "already selected."
-                                                              )),
+                                                    )),
                                                     
                                                     h5(paste0("Clicking the ", 
                                                               "'Generate ", 
@@ -489,26 +538,26 @@
                                                               "results and a ", 
                                                               "volcano plot on ", 
                                                               "right."
-                                                              )),
+                                                    )),
                                                     
                                                     h5(paste0("Clicking the ", 
-                                                    "'Show Advanced Options' ", 
-                                                    "checkbox reveals three ", 
-                                                    "additional options to ", 
-                                                    "adjust the analysis and ", 
-                                                    "visualisation. The ", 
-                                                    "'Minimum Transcripts per ", 
-                                                    "Cell' drop down list ", 
-                                                    "gives options to filter ", 
-                                                    "results to remove low ", 
-                                                    "expression genes if ", 
-                                                    "needed. The 'log2 Fold ", 
-                                                    "Change' and 'Adjusted ", 
-                                                    "p.value' fields are the ", 
-                                                    "significance criteria ", 
-                                                    "used in the volcano plot ", 
-                                                    "and can be adjusted as ", 
-                                                    "needed."
+                                                              "'Show Advanced Options' ", 
+                                                              "checkbox reveals three ", 
+                                                              "additional options to ", 
+                                                              "adjust the analysis and ", 
+                                                              "visualisation. The ", 
+                                                              "'Minimum Transcripts per ", 
+                                                              "Cell' drop down list ", 
+                                                              "gives options to filter ", 
+                                                              "results to remove low ", 
+                                                              "expression genes if ", 
+                                                              "needed. The 'log2 Fold ", 
+                                                              "Change' and 'Adjusted ", 
+                                                              "p.value' fields are the ", 
+                                                              "significance criteria ", 
+                                                              "used in the volcano plot ", 
+                                                              "and can be adjusted as ", 
+                                                              "needed."
                                                     )),
                                                     
                                                     hr(),
@@ -635,7 +684,7 @@
                                                               "specifying the ", 
                                                               "height and width ", 
                                                               "in pixels."
-                                                              ))
+                                                    ))
                                      )
                               ),
                             ),
@@ -652,7 +701,7 @@
                                                      ignore.case = T)],
                                              Tconv = results_names[
                                                grepl(pattern = "cellTypeNT",
-                                               #grepl(pattern = "_Tconv",
+                                                     #grepl(pattern = "_Tconv",
                                                      x = results_names,
                                                      ignore.case = T)]
                                            ),
@@ -664,40 +713,40 @@
                                                                   "to manually",
                                                                   " select ", 
                                                                   "...")
-                                             )
+                                           )
                                            #)
                             ),
                             
                             #fluidRow(
-                              #h5("Select available:"),
-                              #h5("Quick add available:"),
-                              # actionButton(inputId = "Group1SelectTconv", 
-                              #              label = "Tconv"),
-                              # actionButton(inputId = "Group1SelectTregs", 
-                              #              label = "Tregs"),
-                              selectizeInput(inputId = "Group1Selector",
-                                             label = "Add available:",
-                                             choice = list(
-                                               Treg = c("All Tregs", 
-                                                        "Blood Tregs", 
-                                                        "Lymphoid Tregs", 
-                                                        "Non-lymphoid Tregs", 
-                                                        "Gut-associated Tregs"),
-                                               Tconv = c("All Tconv", 
-                                                         "Blood Tconv", 
-                                                         "Lymphoid Tconv", 
-                                                         "Non-lymphoid Tconv", 
-                                                         "Gut-associated Tconv")
-                                               ), 
-                                             selected = "All Tregs", 
-                                             multiple = F, 
-                                             options = list(
-                                               placeholder = "Click to select")
-                                             ),
-                              actionButton(inputId = "Group1Add", 
-                                           label = "Add"),
-                              actionButton(inputId = "Group1Clear", 
-                                           label = "Clear Selection"),
+                            #h5("Select available:"),
+                            #h5("Quick add available:"),
+                            # actionButton(inputId = "Group1SelectTconv", 
+                            #              label = "Tconv"),
+                            # actionButton(inputId = "Group1SelectTregs", 
+                            #              label = "Tregs"),
+                            selectizeInput(inputId = "Group1Selector",
+                                           label = "Add available:",
+                                           choice = list(
+                                             Treg = c("All Tregs", 
+                                                      "Blood Tregs", 
+                                                      "Lymphoid Tregs", 
+                                                      "Non-lymphoid Tregs", 
+                                                      "Gut-associated Tregs"),
+                                             Tconv = c("All Tconv", 
+                                                       "Blood Tconv", 
+                                                       "Lymphoid Tconv", 
+                                                       "Non-lymphoid Tconv", 
+                                                       "Gut-associated Tconv")
+                                           ), 
+                                           selected = "All Tregs", 
+                                           multiple = F, 
+                                           options = list(
+                                             placeholder = "Click to select")
+                            ),
+                            actionButton(inputId = "Group1Add", 
+                                         label = "Add"),
+                            actionButton(inputId = "Group1Clear", 
+                                         label = "Clear Selection"),
                             #),
                             
                             #br(),
@@ -734,39 +783,39 @@
                                                                   "to manually",
                                                                   " select ", 
                                                                   "...")
-                                             )
+                                           )
                             ),
                             
                             #fluidRow(
-                              #h5("Select available:"),
-                              #h5("Quick add available:"),
-                              # actionButton(inputId = "Group2SelectTconv", 
-                              #              label = "Tconv"),
-                              # actionButton(inputId = "Group2SelectTregs", 
-                              #              label = "Tregs"),
-                              selectizeInput(inputId = "Group2Selector",
-                                             label = "Add available:",
-                                             choice = list(
-                                               Treg = c("All Tregs", 
-                                                        "Blood Tregs", 
-                                                        "Lymphoid Tregs", 
-                                                        "Non-lymphoid Tregs", 
-                                                        "Gut-associated Tregs"),
-                                               Tconv = c("All Tconv", 
-                                                         "Blood Tconv", 
-                                                         "Lymphoid Tconv", 
-                                                         "Non-lymphoid Tconv", 
-                                                         "Gut-associated Tconv")
-                                               ), 
-                                             selected = "All Tconv", 
-                                             multiple = F, 
-                                             options = list(
-                                               placeholder = "Click to select")
-                                             ),
-                              actionButton(inputId = "Group2Add", 
-                                           label = "Add"),
-                              actionButton(inputId = "Group2Clear", 
-                                           label = "Clear Selection"),
+                            #h5("Select available:"),
+                            #h5("Quick add available:"),
+                            # actionButton(inputId = "Group2SelectTconv", 
+                            #              label = "Tconv"),
+                            # actionButton(inputId = "Group2SelectTregs", 
+                            #              label = "Tregs"),
+                            selectizeInput(inputId = "Group2Selector",
+                                           label = "Add available:",
+                                           choice = list(
+                                             Treg = c("All Tregs", 
+                                                      "Blood Tregs", 
+                                                      "Lymphoid Tregs", 
+                                                      "Non-lymphoid Tregs", 
+                                                      "Gut-associated Tregs"),
+                                             Tconv = c("All Tconv", 
+                                                       "Blood Tconv", 
+                                                       "Lymphoid Tconv", 
+                                                       "Non-lymphoid Tconv", 
+                                                       "Gut-associated Tconv")
+                                           ), 
+                                           selected = "All Tconv", 
+                                           multiple = F, 
+                                           options = list(
+                                             placeholder = "Click to select")
+                            ),
+                            actionButton(inputId = "Group2Add", 
+                                         label = "Add"),
+                            actionButton(inputId = "Group2Clear", 
+                                         label = "Clear Selection"),
                             #),
                             
                             hr(),
@@ -828,19 +877,19 @@
                             br(),
                             fluidRow(
                               column(width = 10,
-                              p(paste0("For an overview of the results, ", 
-                                       "features and interactability, please ", 
-                                       "click the yellow button to the right."))
+                                     p(paste0("For an overview of the results, ", 
+                                              "features and interactability, please ", 
+                                              "click the yellow button to the right."))
                               ),
-                            column(width = 2,
-                            # actionButton(inputId = "TutorialButton2", 
-                            #              label = "Start tutorial"),
-                            actionBttn(inputId = "TutorialButton2", 
-                                       label = "Start tutorial", 
-                                       style = "material-circle", 
-                                       color = "warning", 
-                                       icon = icon("question")),
-                            )
+                              column(width = 2,
+                                     # actionButton(inputId = "TutorialButton2", 
+                                     #              label = "Start tutorial"),
+                                     actionBttn(inputId = "TutorialButton2", 
+                                                label = "Start tutorial", 
+                                                style = "material-circle", 
+                                                color = "warning", 
+                                                icon = icon("question")),
+                              )
                             ),
                             
                             hr(),
@@ -850,64 +899,64 @@
                             
                             conditionalPanel(
                               condition = "input.PlotSaveOps",
-                            
-                            fluidRow(
-                              column(width = 3,#)
-                              radioGroupButtons(inputId = "SavePlotFormat", 
-                                                label = HTML(paste0("Plot", 
-                                                                    " Export ", 
-                                                                    "Format")), 
-                                                choices = c("SVG", "PNG", "JPEG"), 
-                                                #SVG, PNG, JPEG and WEBP 
-                                                #np native PDF support
-                                                selected = "SVG", 
-                                                direction = "vertical", #"horizontal", 
-                                                checkIcon = list(
-                                                  # yes = icon("ok", 
-                                                  #            lib = "glyphicon")
-                                                  yes = icon(name = "file-image", 
-                                                             lib = "font-awesome")
-                                                ),
-                                                size = "normal" # xs/sm/normal/lg
-                                                ),
-                              ),
-                              column(width = 7,#)
-                              includeScript(path = "js/validate-number.js"),
                               
-                              numericInputIcon(inputId = "WidthPixels", 
-                                               label = HTML(paste0("Plot ", 
-                                                                   "Size in ",  
-                                                                   " Pixels ", #"<br/>", 
-                                                                   "(Range: 100 ", 
-                                                                   "- 10,000) ", 
-                                                                   #"<br/><br/>", 
-                                                                   "<br/>", 
-                                                                   "Width")), #in Pixels",
-                                               value = 880,
-                                               min = 100,
-                                               max = 10000,
-                                               step = 10,
-                                               width = "85%",
-                                               icon = list(
-                                                 icon(name = "ruler-horizontal",
-                                                      lib = "font-awesome"),
-                                                 "px")
-                                               ),
-                              
-                              numericInputIcon(inputId = "HeightPixels", 
-                                               label = "Height", #in Pixels",
-                                               value = 562,
-                                               min = 100,
-                                               max = 10000,
-                                               step = 10,
-                                               width = "85%",
-                                               icon = list(
-                                                 icon(name = "ruler-vertical",
-                                                      lib = "font-awesome"),
-                                                 "px")
-                                               )
+                              fluidRow(
+                                column(width = 3,#)
+                                       radioGroupButtons(inputId = "SavePlotFormat", 
+                                                         label = HTML(paste0("Plot", 
+                                                                             " Export ", 
+                                                                             "Format")), 
+                                                         choices = c("SVG", "PNG", "JPEG"), 
+                                                         #SVG, PNG, JPEG and WEBP 
+                                                         #np native PDF support
+                                                         selected = "SVG", 
+                                                         direction = "vertical", #"horizontal", 
+                                                         checkIcon = list(
+                                                           # yes = icon("ok", 
+                                                           #            lib = "glyphicon")
+                                                           yes = icon(name = "file-image", 
+                                                                      lib = "font-awesome")
+                                                         ),
+                                                         size = "normal" # xs/sm/normal/lg
+                                       ),
+                                ),
+                                column(width = 7,#)
+                                       includeScript(path = "js/validate-number.js"),
+                                       
+                                       numericInputIcon(inputId = "WidthPixels", 
+                                                        label = HTML(paste0("Plot ", 
+                                                                            "Size in ",  
+                                                                            " Pixels ", #"<br/>", 
+                                                                            "(Range: 100 ", 
+                                                                            "- 10,000) ", 
+                                                                            #"<br/><br/>", 
+                                                                            "<br/>", 
+                                                                            "Width")), #in Pixels",
+                                                        value = 880,
+                                                        min = 100,
+                                                        max = 10000,
+                                                        step = 10,
+                                                        width = "85%",
+                                                        icon = list(
+                                                          icon(name = "ruler-horizontal",
+                                                               lib = "font-awesome"),
+                                                          "px")
+                                       ),
+                                       
+                                       numericInputIcon(inputId = "HeightPixels", 
+                                                        label = "Height", #in Pixels",
+                                                        value = 562,
+                                                        min = 100,
+                                                        max = 10000,
+                                                        step = 10,
+                                                        width = "85%",
+                                                        icon = list(
+                                                          icon(name = "ruler-vertical",
+                                                               lib = "font-awesome"),
+                                                          "px")
+                                       )
+                                )
                               )
-                            )
                             ),
                             
                             hr(),
@@ -1002,8 +1051,23 @@
                  
                  h3("Visualise enriched KEGG pathways"),
                  
-                 p(paste0("The results of the pathway analsis using GAGE and ", 
-                          "Pathview can be visualised below.")),
+                 p(paste0("Tregs and Tconv were isolated from blood, and ", 
+                          "perfused spleen, lymph nodes, kidney, liver, lung, ", 
+                          "pancreas, and gut (Peyer’s patches, LPLs, IELs) ", 
+                          "samples. Samples were prepared from Foxp3Thy1.1 ", 
+                          "reporter mice, allowing purification based on Foxp3 ", 
+                          "expression. Bulk mRNA was sequencing using the ", 
+                          "QuantSeq 3’mRNA-Seq Library Prep Kit for Illumina ", 
+                          "and the QuantSeg data analysis workflow. Differential ", 
+                          "analysis was performed between Tregs in the blood, ", 
+                          "lymphoid tissues (spleen, lymph nodes), non-lymphoid ", 
+                          "organs (kidney, liver, lung, pancreas) and ", 
+                          "gut-associated tissues (Peyer’s patches, LPLs, IELs). ", 
+                          "KEGG pathways enriched for differential expression ", 
+                          "are visualised using GAGE and Pathview, with each ", 
+                          "pairwise differential expression set visualised as ", 
+                          "log2 fold-change for any gene within the pathway with ", 
+                          "differential expression.")),
                  
                  hr(),
                  
@@ -1087,14 +1151,30 @@
       #            )
       # },
       
-      #TCR panel ----
+      # TCR panel ----
       {
-        tabPanel(title = "TCR", value = "TCR", 
+        tabPanel(title = "TCR Repertoire", value = "TCR", 
                  
                  h3("TCR repertoire analysis"),
                  
-                 p(paste0("Description of the TCR repertoire analysis - ", 
-                          "ask Orian")),
+                 p(paste0("Tregs were flow sorted from Foxp3Thy1.1 reporter ", 
+                          "mice, pre-injected with anti-CD45 via intravenous ", 
+                          "delivery. Cells were purified from blood, kidney, ", 
+                          "liver, pancreas and LPLs from the gut. Purified ", 
+                          "cells were CD4+Foxp3Thy1.1+ as well as negative for ", 
+                          "intravenous CD45 labelling and for the exclusion ", 
+                          "markers CD19, CD11b, CD8 and F4/80. Cells were ", 
+                          "labelled with Hastag TotalSeq and loaded onto the ", 
+                          "10x Chromium Controller with sequencing performed on ", 
+                          "Illumina HiSeq. Data is visualised for each cell ", 
+                          "where TCRbeta CDR3 expression was observed using ", 
+                          "Chord diagrams. Chord diagrams represent amino ", 
+                          "acid-level unique clonotypes on the circular axis, ", 
+                          "with shared clonotypes represented on the radial ", 
+                          "axis as shared across different tissues in the same ", 
+                          "mouse (green), shared across different tissues in ", 
+                          "different mice (black) and shared between the same ", 
+                          "tissue in different mice (pink).")),
                  
                  #br(),
                  hr(),
@@ -1116,7 +1196,7 @@
                                          multiple = F, 
                                          options = list(
                                            placeholder = "Click to select")
-                                         ),
+                          ),
                           
                           downloadButton(
                             outputId = "DownloadTCRSelected", 
@@ -1128,7 +1208,7 @@
                             label = "All Tissues"
                           )
                           
-                          ),
+                   ),
                    
                    column(width = 8,
                           
@@ -1138,11 +1218,12 @@
                             withSpinner(type = 3, size = 0.5, 
                                         color.background = "#FFFFFF")
                           
-                          )
+                   )
                    
                  )
-                 )
+        )
       },
+      
       # Aging t-SNE panel ----
       # It might be worth putting the pngs together into one plot
       {
@@ -1154,7 +1235,7 @@
           hr(),
           fluidRow(
             column(
-              width = 3,
+              width = 2,
               selectizeInput(
                 inputId = "agingTSNEtissue", 
                 label = "Select Tissue", 
@@ -1162,7 +1243,7 @@
                 #selectize = T, 
                 multiple = FALSE, 
                 options = list(
-                 placeholder = "Click to select")
+                  placeholder = "Click to select")
               ),
               downloadButton(
                 outputId = "DownloadAgingTSNEtissue", 
@@ -1174,30 +1255,37 @@
               ),
               actionButton("browser", "browser")
             ),
-            column(
-              width = 4,
-              imageOutput(
-                outputId = "agingTSNEImage1", 
-                width = 4344*0.15, 
-                height = 4601*0.15
-              ) %>% 
-              withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
-            ),
-            column(
-              width = 4,
-              imageOutput(
-                outputId = "agingTSNEImage2", 
-                width = 4344*0.15, 
-                height = 4601*0.15
-              ) %>% 
-                withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
-            )
+            flowLayout(
+              wellPanel(
+                verticalLayout(
+                  textOutput(outputId = "agingTSNETitle1"),
+                  imageOutput(
+                    outputId = "agingTSNEImage1"#, 
+                    #width = 4344*0.15, 
+                    #height = 4601*0.15
+                  ) #%>% 
+                  #withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
+                )
+              ),
+              wellPanel(
+                verticalLayout(
+                  textOutput(outputId = "agingTSNETitle2"),
+                  imageOutput(
+                    outputId = "agingTSNEImage2", 
+                    width = 4344*0.15, 
+                    height = 4601*0.15
+                  ) #%>% 
+                  #withSpinner(type = 3, size = 0.5, color.background = "#FFFFFF")
+                )
+              )
+            )  
           )
         )
       }
     ),
   )
   ## ui fluid page ends at bracket immediately above
+  
 }
 
 
@@ -1234,7 +1322,7 @@
                                   left_log = 0, 
                                   right_log = 0,
                                   first_run_done = F
-                                  )
+    )
     
     #live updating UI elements
     observe({
@@ -1250,7 +1338,7 @@
                             grepl(pattern = "cellTypeT",
                                   x = results_names,
                                   ignore.case = T) & !(results_names %in%
-                                                        input$Group2)],
+                                                         input$Group2)],
                           Tconv = results_names[
                             grepl(pattern = "cellTypeNT",
                                   x = results_names,
@@ -1258,7 +1346,7 @@
                                                          input$Group2)]
                         ),
                         selected = input$Group1)
-
+      
       updateSelectInput(session = session,
                         inputId = "Group2",
                         label = "Contrast Group 2",
@@ -1291,12 +1379,12 @@
                                                10000, ifelse(
                                                  input$HeightPixels < 100, 100, 
                                                  round(input$HeightPixels))
-                                               )
-                                        ),
+                                        )
+                         ),
                          min = 100,
                          max = 10000,
                          step = 10
-                         )
+      )
       
       updateNumericInput(session = session, 
                          inputId = "WidthPixels", 
@@ -1310,13 +1398,13 @@
                                                10000, ifelse(
                                                  input$WidthPixels < 100, 100, 
                                                  round(input$WidthPixels))
-                                               )
-                                        ),
+                                        )
+                         ),
                          min = 100,
                          max = 10000,
                          step = 10
-                         )
-       
+      )
+      
       updateNumericInput(session = session, 
                          inputId = "log2FCFilt",
                          value = ifelse(input$log2FCFilt > 20, 20, 
@@ -1329,10 +1417,10 @@
                                                    input$log2FCFilt == "" | 
                                                    input$log2FCFilt == 0, 
                                                  2, input$log2FCFilt)
-                                               )
-                                        ),
+                                        )
+                         ),
                          min = 0, max = 20, step = 0.1
-                         )
+      )
       updateNumericInput(session = session, 
                          inputId = "AdjpFilt",
                          value = ifelse(input$AdjpFilt > 1, 1, 
@@ -1345,10 +1433,10 @@
                                                    input$AdjpFilt == "" | 
                                                    input$AdjpFilt == 0, 
                                                  0.01, input$AdjpFilt)
-                                               )
-                                        ),
+                                        )
+                         ),
                          min = 0, max = 1, step = 0.01
-                         )
+      )
       #print(input$AdjpFilt)
       
     })
@@ -1395,7 +1483,7 @@
                                     x = available,
                                     ignore.case = T) & !(available %in%
                                                            input$Group2)])
-                            )
+          )
         }
         else if(group1_selection[1] == "Lymphoid"){
           updateSelectInput(session = session,
@@ -1418,7 +1506,7 @@
                                     x = available,
                                     ignore.case = T) & !(available %in%
                                                            input$Group2)])
-                            )
+          )
         }
         else if(group1_selection[1] == "Non-lymphoid"){
           updateSelectInput(session = session,
@@ -1441,7 +1529,7 @@
                                     x = available,
                                     ignore.case = T) & !(available %in%
                                                            input$Group2)])
-                            )
+          )
         }
         else if(group1_selection[1] == "Gut-associated"){
           updateSelectInput(session = session,
@@ -1464,7 +1552,7 @@
                                     x = available,
                                     ignore.case = T) & !(available %in%
                                                            input$Group2)])
-                            )
+          )
         }
         else{
           updateSelectInput(session = session,
@@ -1484,7 +1572,7 @@
                             ),
                             selected = c(input$Group1, available[
                               !(available %in% input$Group2)])
-                            )
+          )
         }
         
       })
@@ -1644,7 +1732,7 @@
                                     x = available,
                                     ignore.case = T) & !(available %in%
                                                            input$Group1)])
-                            )
+          )
         }
         else if(group2_selection[1] == "Lymphoid"){
           updateSelectInput(session = session,
@@ -1860,7 +1948,7 @@
                                            length(input$Group2) < 1) && 
                              (is.numeric(input$log2FCFilt) &
                                 is.numeric(input$AdjpFilt))
-                           )
+      )
     })
     #output$show_panels <- reactive({FALSE})
     #outputOptions(x = output, name = "show_panels", suspendWhenHidden = FALSE)
@@ -1873,24 +1961,26 @@
       
       #splash alert for the user informing them that the analysis may take some 
       # time
-      if(!global_data$first_run_done){
-        # sendSweetAlert(session = session, 
-        #                title = "Computing contrasts", 
-                       # text = paste0("The computation may take some time during ",
-                       #               "which the tool may appear to not be doing ",
-                       #               "anything. Once the results are computed ",
-                       #               "they will populate the tab."),
-        #                type = "info")
-        shinyalert(title = "Computing contrasts", 
-                   text = paste0("The computation may take some time during ",
-                                 "which the tool may appear to not be doing ",
-                                 "anything. Once the results are computed, ",
-                                 "they will populate the tab."), 
-                   type = "info", 
-                   animation = F, #"slide-from-bottom", 
-                   inputId = "AlertFirstRunDone")
-        global_data$first_run_done <- T
-      }
+      # if(!global_data$first_run_done){
+      # sendSweetAlert(session = session, 
+      #                title = "Computing contrasts", 
+      # text = paste0("The computation may take some time during ",
+      #               "which the tool may appear to not be doing ",
+      #               "anything. Once the results are computed ",
+      #               "they will populate the tab."),
+      #                type = "info")
+      shinyalert(title = "Computing contrasts,\nplease wait...", 
+                 text = paste0("The contrasts may take some time to compute.\n", 
+                               "The results will populate the tab once ready."), 
+                 type = "info", 
+                 animation = F, #"slide-from-bottom", 
+                 inputId = "AlertFirstRunDone", 
+                 showCancelButton = FALSE, 
+                 showConfirmButton = FALSE, 
+                 closeOnEsc = FALSE, 
+                 closeOnClickOutside = FALSE)
+      #   global_data$first_run_done <- T
+      # }
       
       
       #ensuring that the minimum log2FC and minimum adj.p.value fields weren't 
@@ -1927,7 +2017,7 @@
                                   meta_data = MGI_info, 
                                   mean_norm_counts = mean_norm_counts, 
                                   tpc_filtered_list = tpc_filtered_list
-                                  )
+      )
       #print(class(result[[2]]))
       #global_data$result <- result
       
@@ -2022,21 +2112,21 @@
                                        #buttons = c('csv', 'excel', 'pdf'),
                                        #order = list(list(5, 'asc'))
                                        order = list(list(6, 'asc'))
-                                       ), 
+                        ), 
                         filter = list(position = "top", 
                                       plain = F
-                                      ),
+                        ),
                         editable = F, 
                         rownames = F) #%>% 
-            # DT::formatRound(columns = c("Mean.Counts"),
-            #                 digits = 2,
-            #                 mark = "") %>%
-            # DT::formatRound(columns = c("log2.Fold.Change"),
-            #                 digits = 3,
-            #                 mark = "") %>%
-            # DT::formatSignif(columns = c("Adjusted.p.value"),
-            #                  digits = 3,
-            #                  mark = "")
+          # DT::formatRound(columns = c("Mean.Counts"),
+          #                 digits = 2,
+          #                 mark = "") %>%
+          # DT::formatRound(columns = c("log2.Fold.Change"),
+          #                 digits = 3,
+          #                 mark = "") %>%
+          # DT::formatSignif(columns = c("Adjusted.p.value"),
+          #                  digits = 3,
+          #                  mark = "")
         })
         
         #used for updating DataTable values for the 'Selected' column
@@ -2077,7 +2167,7 @@
                                  height = isolate(input$HeightPixels), 
                                  log2FCFilt = input$log2FCFilt, 
                                  AdjpFilt = input$AdjpFilt
-                                 )
+        )
         output$res_volplot <- renderPlotly({p})
         p <- plotly_build(p)
         global_data$base_traces <- length(p$x$data)
@@ -2106,6 +2196,19 @@
       #resuming the DT row selection observer
       #res_table_row_observer$resume()
       
+      #remove popup shinyalert from earlier using second alert with immediate 
+      # set to TRUE
+      shinyalert(title = "Computation Complete", 
+                 text = paste0("Results are being populated"), 
+                 type = "info", 
+                 animation = F, #"slide-from-bottom", 
+                 inputId = "RemoveAlert", 
+                 immediate = TRUE, timer = 1, 
+                 showCancelButton = FALSE, 
+                 showConfirmButton = FALSE, 
+                 closeOnEsc = FALSE, 
+                 closeOnClickOutside = FALSE)
+      
     })
     
     
@@ -2125,7 +2228,7 @@
                             #as.list(c(2:global_data$trace_count))
                             as.list(c(
                               global_data$base_traces:global_data$trace_count))
-                            )
+          )
         
         global_data$trace_count <- global_data$base_traces-1
         #print(global_data$trace_count)
@@ -2152,7 +2255,7 @@
                           format = tolower(isolate(input$SavePlotFormat)), 
                           width = isolate(input$WidthPixels), 
                           height = isolate(input$HeightPixels)
-                          )
+          )
         })
         
         #adding traces to the plotly volcano plot
@@ -2196,7 +2299,7 @@
                                     replacement = "", 
                                     x = selection[,1], 
                                     ignore.case = T)
-                               )
+            )
             #print(selected_text)
           }
           else{
@@ -2210,7 +2313,7 @@
                                     replacement = "", 
                                     x = selection[,2], 
                                     ignore.case = T)
-                               )
+            )
             #print(selected_text)
           }
         }
@@ -2261,27 +2364,27 @@
         plotlyProxy(outputId = "res_volplot", session = session) %>%
           plotlyProxyInvoke("addTrace",
                             list(#x = c(selection[1,5],selection[,5]),
-                                 #y = -log10(c(selection[1,9], selection[,9])),
-                                 x = selected_x,
-                                 y = -log10(selected_y),
-                                 type = "scattergl",
-                                 name = "Selected genes",
-                                 mode = "markers+text",
-                                 marker = list(#symbol = "x",
-                                   symbol = "circle-open", 
-                                   size = 10, 
-                                   #colorscale = "Viridis"
-                                   color = "blue"
-                                 ), 
-                                 # text = c(str_extract(selection[,2], '\\w*')[1],
-                                 #          str_extract(selection[,2], '\\w*')), 
-                                 text = selected_text,
-                                 textposition = "top right" ,
-                                 #textfont_size = 4, 
-                                 textfont = list(family = "sans serif", 
-                                                 size = 10, 
-                                                 color = "blue"
-                                 )
+                              #y = -log10(c(selection[1,9], selection[,9])),
+                              x = selected_x,
+                              y = -log10(selected_y),
+                              type = "scattergl",
+                              name = "Selected genes",
+                              mode = "markers+text",
+                              marker = list(#symbol = "x",
+                                symbol = "circle-open", 
+                                size = 10, 
+                                #colorscale = "Viridis"
+                                color = "blue"
+                              ), 
+                              # text = c(str_extract(selection[,2], '\\w*')[1],
+                              #          str_extract(selection[,2], '\\w*')), 
+                              text = selected_text,
+                              textposition = "top right" ,
+                              #textfont_size = 4, 
+                              textfont = list(family = "sans serif", 
+                                              size = 10, 
+                                              color = "blue"
+                              )
                             )
           )
         
@@ -2312,7 +2415,7 @@
                        rownames = F, 
                        resetPaging = F, 
                        clearSelection = "none")
-         
+        
       }
       #else if the last row has been deselected, then reset selection column
       else if(!is.null(input$res_table_row_last_clicked)){
@@ -2392,7 +2495,7 @@
                     sep = "\t", 
                     col.names = T, 
                     row.names = F)
-        })
+      })
     
     #download the selected rows only 
     output$DownloadTableSelected <- downloadHandler(
@@ -2420,10 +2523,10 @@
                                      source = "volplot", 
                                      priority = "event")
       proxy <- dataTableProxy("res_table")
-
+      
       already_selected <- isolate(input$res_table_rows_selected)
       # proxy %>% selectRows(c(volplot_selected$key, already_selected))
-
+      
       #the following code is designed to allow deselection, but it is bugged for
       #some reason and requires the user to click the last selected node twice
       #to deselect it will need to work on this in later updates if required as
@@ -2432,7 +2535,7 @@
       # if(exists("volplot_selected") & !is.null(volplot_selected) &
       #    length(already_selected) < 50){
       if(length(already_selected) < 50){
-
+        
         if(length(intersect(volplot_selected$key, already_selected)) > 0){
           #print("entering 'if' block")
           if(length(already_selected) > 1){
@@ -2458,12 +2561,12 @@
         #   print("entering 'else' block")
         #   proxy %>% selectRows(NULL)
         # }
-
+        
       }
-
+      
       #volplot_selected <- NULL
       #print(isolate(global_data$trace_count))
-
+      
     })
     
     
@@ -2488,14 +2591,14 @@
                             list(format = format, 
                                  width = width, 
                                  height = height
-                                 ),
+                            ),
                           modeBarButtonsToRemove = list(
                             "sendDataToCloud", "zoom2d", "zoomIn2d",
                             "zoomOut2d", "pan2d", "select2d", "lasso2d",
                             "autoScale2d", "hoverClosestCartesian",
                             "hoverCompareCartesian"
-                            )
                           )
+        )
       
       #updating the format for the counts plot
       plotlyProxy(outputId = "res_colplot", session = session) %>%
@@ -2506,15 +2609,15 @@
                             list(format = format, 
                                  width = width, 
                                  height = height
-                                 ),
+                            ),
                           modeBarButtonsToRemove = list(
                             "sendDataToCloud", "zoom2d", "zoomIn2d",
                             "zoomOut2d", "pan2d", "select2d", "lasso2d",
                             "autoScale2d", "toggleSpikelines"#, 
                             #"hoverClosestCartesian",
                             #"hoverCompareCartesian"
-                            )
                           )
+        )
       
     })
     
@@ -2579,7 +2682,7 @@
     })
     
     
-    # display TCR chord diagrams ----
+    #display TCR chord diagrams
     observeEvent(input$TCRChordSelect, {
       output$TCRChordImage <- renderImage(expr = {
         
@@ -2598,17 +2701,18 @@
              width = dim(img)[2]*0.15,
              height = dim(img)[1]*0.15#,
              #alt = "This is alternate text"
-             )
+        )
       }, deleteFile = F)
     })
+    
     
     tsne_aging_img <- function(filename){
       img <- readPNG(source = filename, native = T, info = T)
       list(
         src = filename, 
         contentType = 'image/png', 
-        width = dim(img)[2]*0.5, 
-        height = dim(img)[1]*0.5
+        width = dim(img)[2]*0.15, 
+        height = dim(img)[1]*0.15
       )
     }
     
@@ -2617,22 +2721,25 @@
     # aging tSNE plots ----
     observeEvent(input$agingTSNEtissue, {
       tissue_files <- paste0("www/Aging_tsne_plots/", 
-                         aging_tsne_plots_list[grep(pattern = input$agingTSNEtissue, 
-                                             x = aging_tsne_plots_list, 
-                                             ignore.case = T)])
+                             aging_tsne_plots_list[grep(pattern = input$agingTSNEtissue, 
+                                                        x = aging_tsne_plots_list, 
+                                                        ignore.case = T)])
       tissue_files <- tissue_files[c(6,2,3,4,5,1)]
       # ordering them manually
       
       output$agingTSNEImage1 <- renderImage(
         expr = tsne_aging_img(tissue_files[2]), deleteFile = F
       )
-    
+      
       output$agingTSNEImage2 <- renderImage(
         expr = tsne_aging_img(tissue_files[2]), deleteFile = F
       )
       
+      output$agingTSNETitle1 <- renderText(paste("t-SNE", input$agingTSNEtissue, "8 weeks"))
+      output$agingTSNETitle2 <- renderText(paste("t-SNE", input$agingTSNEtissue, "12 weeks"))
+      
+      
     })
-    
     
     #display Pathview KEGG Pathways
     observeEvent(input$PathviewPlotSelect, {
@@ -2646,14 +2753,14 @@
         img <- readPNG(
           source = paste0("www/Pathview_plots/", 
                           Pathview_plots_list[grep(pattern = pathway_id, 
-                                              x = Pathview_plots_list, 
-                                              ignore.case = T)]), 
+                                                   x = Pathview_plots_list, 
+                                                   ignore.case = T)]), 
           native = T, info = T)
         
         list(src = paste0("www/Pathview_plots/", 
                           Pathview_plots_list[grep(pattern = pathway_id, 
-                                              x = Pathview_plots_list, 
-                                              ignore.case = T)]),
+                                                   x = Pathview_plots_list, 
+                                                   ignore.case = T)]),
              contentType = 'image/png',
              width = dim(img)[2],#*0.35,
              height = dim(img)[1]#*0.35#,
@@ -2692,7 +2799,7 @@
     output$DownloadPathviewSelected <- downloadHandler(
       filename = function() {
         paste0(input$PathviewPlotSelect, ".zip")
-        },
+      },
       #filename = paste0(input$PathviewPlotSelect, ".zip"),
       content = function(file){
         
@@ -2708,6 +2815,7 @@
                                                       ignore.case = T)]), 
                       "www/Legend.png", "www/Legend2.png"), 
             flags = "-j")
+        
       }, 
       contentType = "application/zip")
     # output$DownloadPathviewSelected <- downloadHandler(
@@ -2732,7 +2840,7 @@
     output$DownloadPathviewAll <- downloadHandler(
       filename = function() {
         paste0("all_pathways.zip")
-        },
+      },
       #filename = "all_pathways.zip",
       content = function(file){
         
@@ -2741,27 +2849,26 @@
                       "www/Legend.png", "www/Legend2.png"), 
             flags = "-j")
         
-        },
+      },
       contentType = "application/zip")
     
     #download TCR plots
-    TCR_plots_list
     output$DownloadTCRSelected <- downloadHandler(
       filename = function() {
         paste0(input$TCRChordSelect, "_chord_diagram.png")
-        },
+      },
       #filename = paste0(input$TCRChordSelect, "_chord_diagram.png"),
       content = function(file){
         
         file.copy(paste0("www/TCR_plots/",
                          TCR_plots_list[grep(pattern = input$TCRChordSelect,
-                                                  x = TCR_plots_list,
-                                                  ignore.case = T)]),
+                                             x = TCR_plots_list,
+                                             ignore.case = T)]),
                   file,
                   copy.mode = F,
                   copy.date = F
-                  )
-        },
+        )
+      },
       contentType = "image/png")
     output$DownloadTCRAll <- downloadHandler(
       filename = function() {
@@ -2799,7 +2906,7 @@
             files = paste0("www/Global_bulk/", 
                            list.files(path = "www/Global_bulk/")),
             flags = "-j"
-            )
+        )
       },
       contentType = "application/zip")
     #"GSEABulk", DiffExprsBulk
@@ -2919,87 +3026,87 @@
                                                 "#WidthPixels", 
                                                 "#HeightPixels", 
                                                 "#res_volplot" 
-                                                ),
-                                   intro = c(paste0("The results of the ", 
-                                                    "contrast are tabulated ", 
-                                                    "here. Column headers can ", 
-                                                    "be clicked to sort by ", 
-                                                    "that column (sorting can ", 
-                                                    "be done on multiple ", 
-                                                    "columns by pressing the ", 
-                                                    "'shift' key and clicking ", 
-                                                    "on the other header). ", 
-                                                    "Columns can be searched ", 
-                                                    "or filtered by clicking ", 
-                                                    "on the blank fields ", 
-                                                    "under the column headers.", 
-                                                    " Clicking a row will ", 
-                                                    "select the row in the ", 
-                                                    "table and highlight the ", 
-                                                    "respective gene in the ", 
-                                                    "volcano plot (upto 50 ", 
-                                                    "rows can be selected by ", 
-                                                    "pressing the 'shift' or ", 
-                                                    "'control' key)."), 
-                                             paste0("Download the complete ", 
-                                                    "contrast results as a ", 
-                                                    "table."), 
-                                             paste0("Download only the rows ", 
-                                                    "which are left after ", 
-                                                    "filtering (empty table if", 
-                                                    " no filtering done)."),
-                                             paste0("Download only the rows ", 
-                                                    "which have been manually ", 
-                                                    "selected (empty table if", 
-                                                    " no selection done)."),
-                                             paste0("This button resets any ", 
-                                                    "rows that have been ", 
-                                                    "selected."), 
-                                             paste0("This checkbox shows and ", 
-                                                    "hides options related ", 
-                                                    "to exporting the plots."),
-                                             paste0("Select the format for ", 
-                                                    "exporting the plot."), 
-                                             paste0("Specify the width of the ", 
-                                                    "plot in pixels for export."), 
-                                             paste0("Specify the height of the ", 
-                                                    "plot in pixels for export."), 
-                                             paste0("The interactive volcano ", 
-                                                    "plot of the contrast. ", 
-                                                    "Hovering over a data ", 
-                                                    "point would show a ", 
-                                                    "tooltip with additional ", 
-                                                    "information. Clicking on ", 
-                                                    "a data point will select ", 
-                                                    "the respective gene in ", 
-                                                    "the table and will also ", 
-                                                    "generate a column plot to ", 
-                                                    "visualise the expression ", 
-                                                    "of the selected gene in ", 
-                                                    "tissues. The plot can be ", 
-                                                    "zoomed-in by clicking and ", 
-                                                    "dragging a box over the ", 
-                                                    "area to be zoomed. ", 
-                                                    "Additionally the axes of ", 
-                                                    "the plot can be adjusted ", 
-                                                    "by dragging the edges of ", 
-                                                    "the respective axes. The ", 
-                                                    "zoom and/or axes can be ", 
-                                                    "reset by double-clicking ", 
-                                                    "in the empty space in the ", 
-                                                    "plot area or by clicking ", 
-                                                    "the house icon in the ", 
-                                                    "top-right of the plot. ", 
-                                                    "The plot can be exported ", 
-                                                    "using the export options ", 
-                                                    "by clicking the camera ", 
-                                                    "icon in the top-right of ", 
-                                                    "the plot. The same ", 
-                                                    "functionality except for ", 
-                                                    "data point selection also ", 
-                                                    "exists for the column ", 
-                                                    "plot.")
-                                             )))
+      ),
+      intro = c(paste0("The results of the ", 
+                       "contrast are tabulated ", 
+                       "here. Column headers can ", 
+                       "be clicked to sort by ", 
+                       "that column (sorting can ", 
+                       "be done on multiple ", 
+                       "columns by pressing the ", 
+                       "'shift' key and clicking ", 
+                       "on the other header). ", 
+                       "Columns can be searched ", 
+                       "or filtered by clicking ", 
+                       "on the blank fields ", 
+                       "under the column headers.", 
+                       " Clicking a row will ", 
+                       "select the row in the ", 
+                       "table and highlight the ", 
+                       "respective gene in the ", 
+                       "volcano plot (upto 50 ", 
+                       "rows can be selected by ", 
+                       "pressing the 'shift' or ", 
+                       "'control' key)."), 
+                paste0("Download the complete ", 
+                       "contrast results as a ", 
+                       "table."), 
+                paste0("Download only the rows ", 
+                       "which are left after ", 
+                       "filtering (empty table if", 
+                       " no filtering done)."),
+                paste0("Download only the rows ", 
+                       "which have been manually ", 
+                       "selected (empty table if", 
+                       " no selection done)."),
+                paste0("This button resets any ", 
+                       "rows that have been ", 
+                       "selected."), 
+                paste0("This checkbox shows and ", 
+                       "hides options related ", 
+                       "to exporting the plots."),
+                paste0("Select the format for ", 
+                       "exporting the plot."), 
+                paste0("Specify the width of the ", 
+                       "plot in pixels for export."), 
+                paste0("Specify the height of the ", 
+                       "plot in pixels for export."), 
+                paste0("The interactive volcano ", 
+                       "plot of the contrast. ", 
+                       "Hovering over a data ", 
+                       "point would show a ", 
+                       "tooltip with additional ", 
+                       "information. Clicking on ", 
+                       "a data point will select ", 
+                       "the respective gene in ", 
+                       "the table and will also ", 
+                       "generate a column plot to ", 
+                       "visualise the expression ", 
+                       "of the selected gene in ", 
+                       "tissues. The plot can be ", 
+                       "zoomed-in by clicking and ", 
+                       "dragging a box over the ", 
+                       "area to be zoomed. ", 
+                       "Additionally the axes of ", 
+                       "the plot can be adjusted ", 
+                       "by dragging the edges of ", 
+                       "the respective axes. The ", 
+                       "zoom and/or axes can be ", 
+                       "reset by double-clicking ", 
+                       "in the empty space in the ", 
+                       "plot area or by clicking ", 
+                       "the house icon in the ", 
+                       "top-right of the plot. ", 
+                       "The plot can be exported ", 
+                       "using the export options ", 
+                       "by clicking the camera ", 
+                       "icon in the top-right of ", 
+                       "the plot. The same ", 
+                       "functionality except for ", 
+                       "data point selection also ", 
+                       "exists for the column ", 
+                       "plot.")
+      )))
       
       observeEvent(input$TutorialButton2,{
         updateCheckboxInput(session = session, 
