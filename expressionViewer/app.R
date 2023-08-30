@@ -241,19 +241,6 @@
     # Step-by-step tutorial
     introjsUI(),
     
-    #importing shinydashboard css
-    # tags$head(
-    #   includeCSS(file.path('www', path = "AdminLTE.css")),
-    #   includeCSS(file.path('www', path = "shinydashboard.css")
-    #   )),
-    
-    #shinythemes::themeSelector(),
-    #theme = shinytheme("cerulean"),
-    #shinyDashboardThemes(theme = "grey_light"),
-    #shinyDashboardThemes(theme = "grey_dark"),
-    
-    #dashboardBody(),
-    
     # App title ----
     titlePanel("The Tissue Treg Project"),
     
@@ -261,81 +248,80 @@
       
       #Landing Page panel
       {
-        tabPanel(title = "The Study", value = "TheStudy", 
-                 
-                 h3("Transcriptional analysis of tissue-resident regulatory T cells"),
-                 
-                 "A transcriptional analysis of tissue-resident ", 
-                 "regulatory T cells (Tregs) as part of the Tissue ", 
-                 "Treg Project from the ", 
-                 a("Liston-Dooley lab.", href='https://www.listonlab.uk/', 
-                   target = "_blank"), 
-                 "The project is based on Tregs and conventional ", 
-                 "T cells (Tconv) isolated from blood, spleen, ", 
-                 "lymph nodes, kidney, liver, lung, pancreas, and ", 
-                 "gut (Peyer’s patches, LPLs, IELs). The ", 
-                 "expression viewer, allowing interactive custom ", 
-                 "analysis and data download, was developed by ", 
-                 "Samar Tareen, is ", 
-                 a("open source,", href = 'https://github.com/AdrianListon/ExpressionViewer', 
-                   target = "_blank"), 
-                 "and is hosted by the Babraham Institute ", 
-                 a("Bioinformatics Group.", href = 'https://www.bioinformatics.babraham.ac.uk/', 
-                   target = "_blank"),
-                 
-                 hr(),
-                 
-                 column(width = 9),
-                 
-                 column(width = 3, 
-                        # style = paste0('margin-bottom:30px;border:1px solid; ', 
-                        #                'padding: 10px;'),
-                        
-                        wellPanel(
-                          h4("Supplementary material for download"),
-                          
-                          h5("Bulk RNA-seq analysis"),
-                          
-                          withTags(
-                            ul(
-                              li(downloadLink(
-                                outputId = "MultiQCBulk", 
-                                label = "QC and pre-processing report"
-                              )),
-                              li(downloadLink(
-                                outputId = "GlobalBulk", 
-                                label = "PCA, t-SNE and UMAP plots"
-                              )),
-                              li(downloadLink(
-                                outputId = "DiffExprsBulk", 
-                                label = paste0("Counts and differential ", 
-                                               "expression results")
-                              )),
-                              li(downloadLink(
-                                outputId = "GSEABulk", 
-                                label = "Gene set enrichment results"
-                              ))
-                            )
-                          ),
-                          
-                          # downloadLink(
-                          #   outputId = "MultiQCBulk", 
-                          #   label = "QC and pre-processing report"
-                          #   )
-                          
-                        )
-                 ),
-                 
-                 br(),
-                 br(),
-                 br(),
-                 br(),
-                 br(),
-                 
-                 fluidRow(
-                   h6(paste0("Copyright 2023, Liston-Dooley Lab, ", 
-                             "Babraham Institute and University of Cambridge."))
-                 )
+        tabPanel(
+          title = "The Study", 
+          value = "TheStudy", 
+          h3("Transcriptional analysis of tissue-resident regulatory T cells"),
+          
+          "A transcriptional analysis of tissue-resident ", 
+          "regulatory T cells (Tregs) as part of the Tissue ", 
+          "Treg Project from the ", 
+          a("Liston-Dooley lab.", href='https://www.listonlab.uk/', 
+           target = "_blank"), 
+          "The project is based on Tregs and conventional ", 
+          "T cells (Tconv) isolated from blood, spleen, ", 
+          "lymph nodes, kidney, liver, lung, pancreas, and ", 
+          "gut (Peyer’s patches, LPLs, IELs). The ", 
+          "expression viewer, allowing interactive custom ", 
+          "analysis and data download, was developed by ", 
+          "Samar Tareen, is ", 
+          a("open source,", href = 'https://github.com/AdrianListon/ExpressionViewer', 
+           target = "_blank"), 
+          "and is hosted by the Babraham Institute ", 
+          a("Bioinformatics Group.", href = 'https://www.bioinformatics.babraham.ac.uk/', 
+           target = "_blank"),
+          
+          hr(),
+#          column(width = 9),
+          column(
+            width = 3, 
+            offset = 9,
+            wellPanel(
+              h4("Supplementary material for download"),
+              
+              h5("Bulk RNA-seq analysis"),
+              
+              withTags(
+                ul(
+                  li(downloadLink(
+                    outputId = "MultiQCBulk", 
+                    label = "QC and pre-processing report"
+                  )),
+                  li(downloadLink(
+                    outputId = "GlobalBulk", 
+                    label = "PCA, t-SNE and UMAP plots"
+                  )),
+                  li(downloadLink(
+                    outputId = "DiffExprsBulk", 
+                    label = paste0("Counts and differential ", 
+                                   "expression results")
+                  )),
+                  li(downloadLink(
+                    outputId = "GSEABulk", 
+                    label = "Gene set enrichment results"
+                  ))
+                )
+              )
+            )
+          ),
+          
+          br(),
+          br(),
+          br(),
+          br(),
+          br(),
+          
+          ## footer text ----
+          fluidRow(
+            h6(style="padding:10px;", 
+              HTML(
+                "Copyright 2023, Liston-Dooley Lab, 
+                 Babraham Institute and University of Cambridge. <br>
+                 Funded by the European Union (ERC, TissueTreg, 681373)
+                 and Wellcome Trust (Brain CD4 T cells and their influence 
+                 over microglial homeostasis, 222442/A/21/Z).")
+              )
+          )
         )
       },
       
