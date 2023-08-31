@@ -97,6 +97,19 @@
                                    ignore.case = T)
     }
     
+    ## tSNE info text ----
+    tSNSE_info_text <- paste0(
+      "The panel included the markers CD103, CD4, CD45, CD62L, CD8a, CD152 (CTLA-4), CD25, CD44, ICOS, CD3, PD-1, CD19, KLRG1, TCR-beta, CD304 (Neuropilin), T-bet, Helios, CD69, NK1.1, ST2, Foxp3, Ki67 and viability. Tregs were gated as viable CD45", tags$sup("+"), 
+      " CD3", tags$sup("+"),
+      " CD4", tags$sup("+"), 
+      " TCR", tags$sup("-"),
+      " beta", tags$sup("+"),
+      " Foxp3", tags$sup("+"), 
+      " CD8", tags$sup("-"),
+      " CD19", tags$sup("-"),
+      " lymphocytes, and the tSNE analysis was performed on CD103, CTLA-4, CD25, CD44, ICOS, PD-1, KLRG1, Neuropilin, T-bet, Helios, CD69, ST2 and Ki67 using the Cross-Entropy test script in R. The script is ",
+      a("available from GitHub.", href = 'https://github.com/AdrianListon/Cross-Entropy-test/tree/main', target = "_blank", .noWS = "outside")
+    )
     
     #meta data
     MGI_info <- read.delim(file = "data/combined_MGI_info.txt", 
@@ -1214,26 +1227,27 @@
           h3("t-SNE plots across 6 time-points"),
           p(
             HTML(
-              paste0(
-                "Leukocytes were isolated from the perfused tissues of mice aged 8 to 100 weeks, stained for flow cytometry and acquired on a BD FACSymphony. The panel included the markers CD103, CD4, CD45, CD62L, CD8a, CD152 (CTLA-4), CD25, CD44, ICOS, CD3, PD-1, CD19, KLRG1, TCR-beta, CD304 (Neuropilin), T-bet, Helios, CD69, NK1.1, ST2, Foxp3, Ki67 and viability. Tregs were gated as viable CD45", 
-              tags$sup("+"), 
-              "CD3",
-              tags$sup("+"),
-              "CD4",
-              tags$sup("+"), 
-              "TCR",
-              tags$sup("-"),
-              "beta",
-              tags$sup("+"),
-              "Foxp3",
-              tags$sup("+"), 
-              "CD8",
-              tags$sup("-"),
-              "CD19",
-              tags$sup("-"),
-              "lymphocytes, and the tSNE analysis was performed on CD103, CTLA-4, CD25, CD44, ICOS, PD-1, KLRG1, Neuropilin, T-bet, Helios, CD69, ST2 and Ki67 using the Cross-Entropy test script in R. The script is ",
-              a("available from GitHub,", href = 'https://github.com/AdrianListon/Cross-Entropy-test/tree/main', target = "_blank", .noWS = "outside")
-              )
+              paste0("Leukocytes were isolated from the perfused tissues of mice aged 8 to 100 weeks, stained for flow cytometry and acquired on a BD FACSymphony. ", tSNSE_info_text)
+              # paste0(
+              #   "Leukocytes were isolated from the perfused tissues of mice aged 8 to 100 weeks, stained for flow cytometry and acquired on a BD FACSymphony. The panel included the markers CD103, CD4, CD45, CD62L, CD8a, CD152 (CTLA-4), CD25, CD44, ICOS, CD3, PD-1, CD19, KLRG1, TCR-beta, CD304 (Neuropilin), T-bet, Helios, CD69, NK1.1, ST2, Foxp3, Ki67 and viability. Tregs were gated as viable CD45", 
+              # tags$sup("+"), 
+              # " CD3",
+              # tags$sup("+"),
+              # " CD4",
+              # tags$sup("+"), 
+              # " TCR",
+              # tags$sup("-"),
+              # " beta",
+              # tags$sup("+"),
+              # " Foxp3",
+              # tags$sup("+"), 
+              # " CD8",
+              # tags$sup("-"),
+              # " CD19",
+              # tags$sup("-"),
+              # " lymphocytes, and the tSNE analysis was performed on CD103, CTLA-4, CD25, CD44, ICOS, PD-1, KLRG1, Neuropilin, T-bet, Helios, CD69, ST2 and Ki67 using the Cross-Entropy test script in R. The script is ",
+              # a("available from GitHub,", href = 'https://github.com/AdrianListon/Cross-Entropy-test/tree/main', target = "_blank", .noWS = "outside")
+              #)
             )
           ),
           hr(),
@@ -1313,7 +1327,13 @@
           title = "Microbiome t-SNE", 
           value = "MicrobiomeTSNE", 
           h3("t-SNE plots across 3 conditions"),
-          p(paste0("Further description?")),
+          p(
+            HTML(
+              paste0(
+            "The impact of the microbiome on Treg phenotype was assessed by high parameter flow cytometry. SPF mice were compared to gnotobiotic (germ-free) and wilded (cohoused) microbiome mice. For the microbiome enrichment, pet store female mice were wild-exposed prior to cohousing with SPF C57BL/6J mice. Leukocytes were isolated from the perfused tissues of mice, stained for flow cytometry and acquired on a BD FACSymphony. ",
+            tSNSE_info_text
+            ))
+          ),
           hr(),
           fluidRow(
             column(
