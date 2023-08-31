@@ -97,6 +97,12 @@
                                    ignore.case = T)
     }
     
+    ## flow repository IDs ----
+    flow_data_ids <- tibble::tibble(
+      Dataset = c("Ageing", "Microbiome"), 
+      `FlowRepository ID` = c("FR-FCM-Z6L9", "FR-FCM-Z6LT")
+    )
+    
     ## tSNE info text ----
     tSNSE_info_text <- paste0(
       "The panel included the markers CD103, CD4, CD45, CD62L, CD8a, CD152 (CTLA-4), CD25, CD44, ICOS, CD3, PD-1, CD19, KLRG1, TCR-beta, CD304 (Neuropilin), T-bet, Helios, CD69, NK1.1, ST2, Foxp3, Ki67 and viability. Tregs were gated as viable CD45", tags$sup("+"), 
@@ -276,10 +282,17 @@
             .noWS = c("after-begin", "before-end")
           ),
           hr(),
-#          column(width = 9), 
           column(
-            width = 3, 
-            offset = 9,
+            width = 6,
+            h4("Flow cytometry data are available for download on FlowRepository at the links below."),
+            DT::datatable(
+              flow_data_ids,
+              rownames = FALSE, 
+              options = list(dom = "t")
+            )
+          ), 
+          column(
+            width = 4, offset = 2,
             wellPanel(
               h4("Supplementary material for download"),
               
@@ -317,14 +330,16 @@
           
           ## footer text ----
           fluidRow(
-            h6(style="padding:10px;", 
+            h6(
+              style="padding:10px;", 
               HTML(
-                "Copyright 2023, Liston-Dooley Lab, 
-                 Babraham Institute and University of Cambridge. <br>
-                 Funded by the European Union (ERC, TissueTreg, 681373)
+                "Funded by the European Union (ERC, TissueTreg, 681373)
                  and Wellcome Trust (Brain CD4 T cells and their influence 
-                 over microglial homeostasis, 222442/A/21/Z).")
+                 over microglial homeostasis, 222442/A/21/Z). <br>
+                 Copyright 2023, Liston-Dooley Lab, 
+                 Babraham Institute and University of Cambridge."
               )
+            )
           )
         )
       },
