@@ -284,7 +284,7 @@
           hr(),
           column(
             width = 6,
-            h4("Flow cytometry data are available for download on FlowRepository at the links below."),
+            h4("Flow cytometry data are available for download on FlowRepository using the details below."),
             DT::datatable(
               flow_data_ids,
               rownames = FALSE, 
